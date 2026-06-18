@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, My Love! 🎂</title>
+    <!-- Google Fonts for Cute Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #fff5f5;
+            --primary-color: #ff8da1;
+            --primary-hover: #ff6b84;
+            --text-color: #5d4037;
+            --card-bg: #ffffff;
+            --accent-color: #ffb7b2;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        /* Floating Hearts Background Background */
+        .hearts-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Container Structure */
+        .container {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 30px rgba(255, 141, 161, 0.2);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            border: 4px solid #ffe3e8;
+            position: relative;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Fredoka', sans-serif;
+            color: #ff5e7e;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* Cute Buttons */
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 141, 161, 0.4);
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 141, 161, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Screens Layout */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: #ffe3e8;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff8da1, #ff5e7e);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* Reward Message Box */
+        .reward-box {
+            background-color: #fff0f3;
+            border-left: 5px solid #ff5e7e;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+            font-style: italic;
+            text-align: left;
+            position: relative;
+        }
+
+        .reward-box::before {
+            content: "💌 Reward Message:";
+            display: block;
+            font-family: 'Fredoka', sans-serif;
+            font-style: normal;
+            font-weight: bold;
+            color: #ff5e7e;
+            margin-bottom: 5px;
+        }
+
+        /* Game Specific CSS */
+        .grid {
+            display: grid;
+            gap: 15px;
+            margin: 20px auto;
+            justify-content: center;
+        }
+
+        /* Level 1: Spot the Odd One */
+        .grid-l1 { grid-template-columns: repeat(4, 1fr); }
+        .emoji-btn {
+            font-size: 2.5rem;
+            background: none;
+            border: 2px solid transparent;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: transform 0.2s;
+            padding: 10px;
+        }
+        .emoji-btn:hover { transform: scale(1.15); background-color: #fff0f3; }
+
+        /* Level 2: Memory Bloom */
+        .grid-l2 { grid-template-columns: repeat(4, 1fr); max-width: 400px;}
+        .tile {
+            height: 70px;
+            background-color: var(--primary-color);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+            user-select: none;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .tile.flipped {
+            background-color: #ffe3e8;
+            color: initial;
+            transform: rotateY(180deg);
+        }
+        .tile.matched {
+            background-color: #d1e7dd;
+            color: initial;
+            visibility: visible;
+            pointer-events: none;
+        }
+
+        /* Level 3: Color Trap */
+        .color-display {
+            font-size: 3rem;
+            font-family: 'Fredoka', sans-serif;
+            margin: 30px 0;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        .color-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Level 4 to 7 Universal input styling */
+        .input-game {
+            width: 80%;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            border: 2px solid var(--accent-color);
+            border-radius: 25px;
+            margin-bottom: 20px;
+            outline: none;
+            text-align: center;
+        }
+        .input-game:focus {
+            border-color: var(--primary-color);
+        }
+
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #dc3545;
+            min-height: 24px;
+        }
+
+        /* Finale Decorations */
+        .confetti {
+            font-size: 3rem;
+            animation: bounce 1s infinite alternate;
+            margin: 20px 0;
+        }
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-15px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hearts-bg" id="heartsBg"></div>
+
+    <div class="container">
+        <!-- ================= OPENING SCREEN ================= -->
+        <div id="screen-welcome" class="screen active">
+            <div style="font-size: 4rem; margin-bottom: 10px;">👑🎂💝</div>
+            <h1>Happy Birthday, Rusty Baby!</h1>
+            <h3 style="color: #777; font-weight: 500; margin-bottom: 30px;">From your beautiful Girlfriend. Celina Joie Acas, future Mrs. Sumang!✨</h3>
+            <p>I have built a special path just for you today. Ahead of you lie 7 challenges designed to test your eyes, memory, quick thinking, and wisdom.</p>
+            <p><strong>Your Mission:</strong> Unlock all 7 secret messages by finishing each game!</p>
+            <button class="btn" onclick="nextScreen('screen-l1')">Let's Play! 🚀</button>
+        </div>
+
+        <!-- ================= LEVEL 1 ================= -->
+        <div id="screen-l1" class="screen">
+            <div class="progress-container"><div class="progress-bar" style="width: 14%;"></div></div>
+            <h2>Level 1: Spot the Different One 🔍</h2>
+            <p>Your eyes always look at me, but can they spot the odd one out here?</p>
+            <div class="grid grid-l1" id="l1-grid"></div>
+            <div class="feedback" id="l1-feedback"></div>
+        </div>
+
+        <!-- ================= LEVEL 2 ================= -->
+        <div id="screen-l2" class="screen">
+            <div class="progress-container"><div class="progress-bar" style="width: 28%;"></div></div>
+            <h2>Level 2: Memory Bloom 🌸</h2>
+            <p>Match the pairs! Just like how our best memories fit perfectly together.</p>
+            <div class="grid grid-l2" id="l2-grid"></div>
+            <div class="feedback" id="l2-feedback"></div>
+        </div>
+
+        <!-- ================= LEVEL 3 ================= -->
+        <div id="screen-l3" class="screen">
+            <div class="progress-container"><div class="progress-bar" style="width: 42%;"></div></div>
+            <h2>Level 3: Color Word Trap 🎨</h2>
+            <p>Don't look at what the text <i>says</i>... Press the button matching the true <b>COLOR</b> of the word!</p>
+            <div class="color-display" id="l3-word">WORD</div>
+            <div class="color-options" id="l3-options"></div>
+            <div class="feedback" id="l3-feedback"></div>
+        </div>
+
+        <!-- ================= LEVEL 4 ================= -->
+        <div id="screen-l4" class="screen">
+            <div class="progress-container"><div class="progress-bar" style="width: 56%;"></div></div>
+            <h2>Level 4: Number Pattern 🔢</h2>
+            <p>Let's find the rhythm of the sequence. Solve for X:</p>
+            <h3 style="font-size: 2rem; margin: 20px 0; color:#ff5e7e">2, 6, 12, 20, 30, X</h3>
+            <input type="number" id="l4-input" class="input-game" placeholder="Your Answer">
+            <div><button class="btn" onclick="checkL4()">Submit Guess</button></div>
+            <div class="feedback" id="l4-feedback"></div>
+        </div>
+
+        <!-- ================= LEVEL 5 ================= -->
+        <div id="screen-l5" class="screen">
+            <div class="progress-container"><div class="progress-bar" style="width: 70%;"></div></div>
+            <h2>Level 5: Reverse Thinking 🧠</h2>
+            <p>If reading backwards is a sign of clever craft, decipher this code to move right along.</p>
+            <h3 style="font-size: 1.6rem; margin: 20px 0; color: #ff5e7e; letter-spacing: 2px;">!UOY EVOL I NAHT EROM EM EVOL REVEN NAC UOY</h3>
+            <input type="text" id="l5-input" class="input-game" placeholder="Type the decoded sentence normally">
+            <div><button class="btn" onclick="checkL5()">Verify Code</button></div>
+            <div class="feedback" id="l5-feedback"></div>
+        </div>
+
+        <!-- ================= LEVEL 6 ================= -->
+        <div id="screen-l6" class="screen">
+            <div class="progress-container"><div class="progress-bar" style="width: 85%;"></div></div>
+            <h2>Level 6: The Truth Room ⚖️</h2>
+            <p>Three magical statements guard the next gate. Only <b>ONE</b> statement tells the absolute truth. Can you find the honest guard?</p>
+            <div style="text-align: left; background: #fff0f3; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                <p style="margin-bottom: 8px;"><b>Door A:</b> "Door B is lying."</p>
+                <p style="margin-bottom: 8px;"><b>Door B:</b> "Door C is telling the truth."</p>
+                <p style="margin-bottom: 0;"><b>Door C:</b> "We are all lying."</p>
+            </div>
+            <div class="color-options">
+                <button class="btn" onclick="checkL6('A')">Door A is Truthful</button>
+                <button class="btn" onclick="checkL6('B')">Door B is Truthful</button>
+                <button class="btn" onclick="checkL6('C')">Door C is Truthful</button>
+            </div>
+            <div class="feedback" id="l6-feedback"></div>
+        </div>
+
+        <!-- ================= LEVEL 7 ================= -->
+        <div id="screen-l7" class="screen">
+            <div class="progress-container"><div class="progress-bar" style="width: 95%;"></div></div>
+            <h2>Level 7: Final Mind Mirror 🪞</h2>
+            <p>To cross the finish line, you must crack the riddle of reflection:</p>
+            <p style="font-style: italic; background: #fff0f3; padding: 15px; border-radius: 12px;">"I am clean but have no hands. I look back into your eyes but have no sight. I show your smile but feel no joy. What am I?"</p>
+            <input type="text" id="l7-input" class="input-game" placeholder="Your one-word answer...">
+            <div><button class="btn" onclick="checkL7()">Shatter the Mirror</button></div>
+            <div class="feedback" id="l7-feedback"></div>
+        </div>
+
+        <!-- ================= REWARD INTERMEDIARY SCREEN ================= -->
+        <div id="screen-reward" class="screen">
+            <div style="font-size: 3rem;">🔓💖</div>
+            <h2 id="reward-title">Level Cleared!</h2>
+            <div class="reward-box" id="reward-text">Message goes here.</div>
+            <button class="btn" id="reward-next-btn" onclick="proceedAfterReward()">Advance to Next Level ➔</button>
+        </div>
+
+        <!-- ================= FINAL WINNER SCREEN ================= -->
+        <div id="screen-winner" class="screen">
+            <div class="confetti">👑🎉🏆🎂💖</div>
+            <h1 style="font-size: 2.5rem; color: #ff335c;">YOU ARE THE WINNER!</h1>
+            <p style="font-weight: bold; font-size: 1.2rem; color: #777;">You successfully completed all 7 levels!</p>
+            
+            <div style="background: linear-gradient(135deg, #ffe3e8 0%, #ffffff 100%); padding: 30px; border-radius: 20px; border: 3px dashed #ff8da1; text-align: left; margin-top: 20px;">
+                <h3 style="text-align: center; font-size: 1.5rem;">💌 The Grand Finale Message</h3>
+                <p style="font-size: 1.1rem; color: #4a332d; text-align: center; line-height: 1.8;">
+                    "Amazing! Now bb, HAPPY BIRTHDAY MY LOVE, MY BABY. This is not just about our anniversary pero birthday mo din. I just want to thank you for all the things you’ve done in my life so far. Thank you for existing, for being in my life. You are such a blessing in my life bb. You give me love that I badly wanted my entire life. I know I will be safe and love in the future as well. Thank you too for not giving up on me and our relationship. The following year wil make us stronger, we’ll learn more and love more. Together, we will build a wonderful journey ahead. Again, happy birthday. It maybe your birthday but it feels like it was me tha God had given a gift, you. I love you 🎂🥂❤️ </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- GAME CONFIGURATIONS ---
+        const rewardMessages = {
+            1: "What a cute game, right? Hehe Knowing you is a very blessing. As we’ve been together for the whole year (not literally), marami akong natutunan sayo and lalo sa sarili ko. Di ko man lagi sinasabi sayo to pero I’m very grateful for your life. Na binigyan mo me ng chance para mas makilala ka. Kung di mo ko binigyan ng chance or yung relationship natin, sure na sure na wala pa din siguro ako sa kalingkingan ng narating ko ngayon. I love you by. Thank you for being my boyfriend.",
+            2: "Wow, ang galing naman ng baby ko! I really love how smart you are. Lagi ko ngang pinagmamalaki sa ibang tao na sobrang talino mo hehe which is true. One of the things I like to a person is their mind aside from their character. If ang tao, matalino malaki ang chances na mabait or matinong tao din ito. Eh ikaw matalino talaga. Di ko lang alam kung mabait ka din sa iba, pero sakin oo. Though di tayo perfect-ganun kabait pareho, but we still keep choosing to love each other hehe~",
+            3: "Ang galing galing talaga ng bb ko hihi! Noooow, I know we are still learning. We accept challenges individually and as a couple. Marami tayong problemang pinagdaanan at natuto tayo dun. Pero by, lagi mo kong kasama at kasasamahin sa future harapin ito. We are still growing emotionally, just remember na di ka mag-isa. Di man ako magaling magcomfort, but my hugs are the best! I love you bb, you’re the best!",
+            4: "Yey! You finished this level! Ang galiiiing hehe ~ Alam mo by, hangang hanga talaga ako sa memory mo. Kaya masyado akong na-baby na paalala mo sakin ganto ganyan pero byyyy di ko malilimutan ang araw ngayon! Never! Kasi today pinanganak ang unang lalaking nagmahal sakin ng totoo. Yun talagang ginagawa yung best para sa ikabubuti ko. I love you bb huhu Ps. Naiyak ako sa part na to hehe",
+            5: "Omg, ang galing talaga ng bb ko hehe~ Ang bilis ng panahon no? Nakukulangan nga ko sa mga araw na lumilipas kahit magkasama tayo. Gusto ko man na lagi ka kasama 24/7, pero need natin mag work huhu Magkasama nating haharapin ang hirap financially! Alam ko na kung bakit bumubilis ang araw, ganun kasi kapag nawawala ang pag oover think masyado at pag masaya ka. Masaya ako kahit nasa bahay lang tayo, basta kasama ka. I always feel happy pagkasama ka by, I love youuuuuuuu muwaapsxz",
+            6: "Malapit ka ng matapos by kaya mo yan!!!! Habang tinatype ko to, inaalala ko pa mga gusto kong sabihin sayo hahaha ayun meron nga! Sorry by sa mga short comings ko. Alam ko matigas ulo ko at alam ko ding nagsasawa ka na. Ang mahalaga di mo ko iiwan, mag sawa ka na lang HAHAHA May mga bagay ka mang bago pa sayo about sa relationship, at least ito pa din tayo diba? Tsaka, alam naman nating di lahat perfect. Pero very really sorry sa lahat by and I do really love you deep deep down the ocean of Celina Joie Acas hehe I love youuuou found the truth! Your honesty and wisdom are exactly why I can trust you with all my heart, always.",
+            7: "You broke through the illusion! The mind mirror reflects exactly what I see every day: an incredible, wise, and absolutely amazing partner."
+        };
+
+        let currentLevel = 1;
+
+        function nextScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            // Trigger specific game initialization if needed
+            if (screenId === 'screen-l1') initLevel1();
+            if (screenId === 'screen-l2') initLevel2();
+            if (screenId === 'screen-l3') initLevel3();
+        }
+
+        function showReward(level, nextScreenId) {
+            document.getElementById('reward-title').innerText = `Level ${level} Cleared! 🎉`;
+            document.getElementById('reward-text').innerText = rewardMessages[level];
+            
+            // Point the continue button to the next actual layout
+            document.getElementById('reward-next-btn').setAttribute('onclick', `nextScreen('${nextScreenId}')`);
+            nextScreen('screen-reward');
+        }
+
+        // --- LEVEL 1 CODE (Spot the Odd One) ---
+        function initLevel1() {
+            const grid = document.getElementById('l1-grid');
+            grid.innerHTML = '';
+            document.getElementById('l1-feedback').innerText = '';
+            
+            const baseEmoji = "💖";
+            const oddEmoji = "💝"; 
+            const randomIndex = Math.floor(Math.random() * 16);
+
+            for (let i = 0; i < 16; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'emoji-btn';
+                btn.innerText = (i === randomIndex) ? oddEmoji : baseEmoji;
+                btn.onclick = function() {
+                    if (i === randomIndex) {
+                        showReward(1, 'screen-l2');
+                    } else {
+                        document.getElementById('l1-feedback').innerText = "Oops! That one matches perfectly. Try again!";
+                    }
+                };
+                grid.appendChild(btn);
+            }
+        }
+
+        // --- LEVEL 2 CODE (Memory Match) ---
+        let flippedTiles = [];
+        let matchedCount = 0;
+        function initLevel2() {
+            const grid = document.getElementById('l2-grid');
+            grid.innerHTML = '';
+            document.getElementById('l2-feedback').innerText = '';
+            flippedTiles = [];
+            matchedCount = 0;
+
+            const items = ['🌹', '🌹', '🦊', '🦊', '🎈', '🎈', '🍫', '🍫', '🥑', '🥑', '✨', '✨', '🧸', '🧸', '🍿', '🍿'];
+            // Shuffle
+            items.sort(() => Math.random() - 0.5);
+
+            items.forEach((item, index) => {
+                const tile = document.createElement('div');
+                tile.className = 'tile';
+                tile.dataset.value = item;
+                tile.dataset.index = index;
+                tile.innerText = item;
+                tile.onclick = function() {
+                    if (tile.classList.contains('flipped') || tile.classList.contains('matched') || flippedTiles.length >= 2) return;
+                    
+                    tile.classList.add('flipped');
+                    flippedTiles.push(tile);
+
+                    if (flippedTiles.length === 2) {
+                        if (flippedTiles[0].dataset.value === flippedTiles[1].dataset.value) {
+                            flippedTiles[0].classList.add('matched');
+                            flippedTiles[1].classList.add('matched');
+                            flippedTiles = [];
+                            matchedCount += 2;
+                            if (matchedCount === items.length) {
+                                setTimeout(() => showReward(2, 'screen-l3'), 600);
+                            }
+                        } else {
+                            setTimeout(() => {
+                                flippedTiles[0].classList.remove('flipped');
+                                flippedTiles[1].classList.remove('flipped');
+                                flippedTiles = [];
+                            }, 1000);
+                        }
+                    }
+                };
+                grid.appendChild(tile);
+            });
+        }
+
+        // --- LEVEL 3 CODE (Color Word Trap) ---
+        const colorData = [
+            { text: 'GREEN', color: '#ff5e7e', name: 'Pink' },
+            { text: 'BLUE', color: '#4caf50', name: 'Green' },
+            { text: 'PINK', color: '#2196f3', name: 'Blue' },
+            { text: 'YELLOW', color: '#9c27b0', name: 'Purple' }
+        ];
+        let l3Target;
+        function initLevel3() {
+            document.getElementById('l3-feedback').innerText = '';
+            const randomIndex = Math.floor(Math.random() * colorData.length);
+            l3Target = colorData[randomIndex];
+
+            const displayWord = document.getElementById('l3-word');
+            displayWord.innerText = l3Target.text;
+            displayWord.style.color = l3Target.color;
+
+            const optionsContainer = document.getElementById('l3-options');
+            optionsContainer.innerHTML = '';
+
+            // Shuffle option choices
+            const choices = [...colorData].sort(() => Math.random() - 0.5);
+            choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.style.backgroundColor = '#f0f0f0';
+                btn.style.color = '#333';
+                btn.style.boxShadow = 'none';
+                btn.innerText = choice.name; 
+                btn.onclick = function() {
+                    if (choice.color === l3Target.color) {
+                        showReward(3, 'screen-l4');
+                    } else {
+                        document.getElementById('l3-feedback').innerText = "Tricked ya! Don't look at the text, focus on the ink color!";
+                        setTimeout(initLevel3, 1200);
+                    }
+                };
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        // --- LEVEL 4 CODE (Number Pattern) ---
+        function checkL4() {
+            const answer = document.getElementById('l4-input').value.trim();
+            // Explanation: Difference climbs by +4, +6, +8, +10, then +12. 30 + 12 = 42
+            if (answer === '42') {
+                showReward(4, 'screen-l5');
+            } else {
+                document.getElementById('l4-feedback').innerText = "Not quite! Hint: Look closely at what gets added each step (+4, +6, +8...)";
+            }
+        }
+
+        // --- LEVEL 5 CODE (Reverse Thinking) ---
+        function checkL5() {
+            const answer = document.getElementById('l5-input').value.trim().toLowerCase();
+            const cleanTarget = "you can never love me more than i love you";
+            
+            if (answer.replace(/[^a-z]/g, '') === cleanTarget.replace(/[^a-z]/g, '')) {
+                showReward(5, 'screen-l6');
+            } else {
+                document.getElementById('l5-feedback').innerText = "Incorrect decode sequence. Try typing it exactly from right to left!";
+            }
+        }
+
+        // --- LEVEL 6 CODE (The Truth Room) ---
+        function checkL6(choice) {
+            // Logic explanation: 
+            // If C is true, then "all are lying" which creates a paradox. So C is lying.
+            // If B is true, C is telling the truth (which we know is false). So B is lying.
+            // If A is true, B is lying (which fits, since B is lying!). Thus, A is telling the truth.
+            if (choice === 'A') {
+                showReward(6, 'screen-l7');
+            } else {
+                document.getElementById('l6-feedback').innerText = "That door traps you in a logical loop! Think carefully about who creates a paradox.";
+            }
+        }
+
+        // --- LEVEL 7 CODE (Final Mind Mirror) ---
+        function checkL7() {
+            const answer = document.getElementById('l7-input').value.trim().toLowerCase();
+            if (answer.includes('mirror') || answer.includes('reflection')) {
+                nextScreen('screen-winner');
+            } else {
+                document.getElementById('l7-feedback').innerText = "The mirror remains foggy. Think of what you gaze into to fix your hair!";
+            }
+        }
+
+        // Decorative background generation
+        function createDecorativeBackground() {
+            const container = document.getElementById('heartsBg');
+            const icons = ['❤️', '💖', '✨', '🌸', '🎈'];
+            for (let i = 0; i < 20; i++) {
+                const span = document.createElement('span');
+                span.innerText = icons[Math.floor(Math.random() * icons.length)];
+                span.style.position = 'absolute';
+                span.style.left = Math.random() * 100 + '%';
+                span.style.top = Math.random() * 100 + '%';
+                span.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
+                span.style.opacity = Math.random() * 0.3 + 0.1;
+                container.appendChild(span);
+            }
+        }
+        createDecorativeBackground();
+    </script>
+</body>
+</html>
